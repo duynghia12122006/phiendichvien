@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Trợ Lý Phiên Dịch Neon - V2 Perfect</title>
+    <title>Trợ Lý Phiên Dịch Neon Dual-Lang</title>
     <style>
         :root {
             --bg-black: #06060c; 
@@ -22,7 +22,7 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body {
-            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            font-family: 'Segoe UI', 'Roboto', 'Noto Sans JP', sans-serif;
             background-color: var(--bg-black);
             color: var(--text-primary);
             margin: 0;
@@ -33,6 +33,57 @@
             overflow: hidden;
         }
 
+        /* MÀN HÌNH CHỌN TÍNH NĂNG LÚC MỞ APP */
+        .welcome-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-black);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: radial-gradient(circle at 50% 50%, #140a28, var(--bg-black) 80%);
+        }
+        .welcome-title {
+            color: var(--text-primary);
+            font-size: 20px;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+            text-align: center;
+        }
+        .lang-option-btn {
+            width: 85%;
+            max-width: 320px;
+            padding: 18px;
+            margin: 12px 0;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #fff;
+            background: var(--bg-card);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+        }
+        .lang-option-btn.en {
+            border: 1px solid var(--neon-purple);
+            box-shadow: 0 0 10px rgba(191, 139, 255, 0.15);
+        }
+        .lang-option-btn.en:shadow-hover { box-shadow: 0 0 20px var(--neon-purple); }
+        .lang-option-btn.en:active { transform: scale(0.98); background: rgba(191, 139, 255, 0.1); }
+        
+        .lang-option-btn.ja {
+            border: 1px solid var(--neon-cyan);
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.15);
+        }
+        .lang-option-btn.ja:shadow-hover { box-shadow: 0 0 20px var(--neon-cyan); }
+        .lang-option-btn.ja:active { transform: scale(0.98); background: rgba(0, 240, 255, 0.1); }
+
+        /* GIAO DIỆN CHÍNH */
         .app-container {
             display: flex;
             flex-direction: column;
@@ -46,6 +97,7 @@
 
         .header {
             padding: 12px 15px;
+            position: relative;
             text-align: center;
             background: rgba(6, 6, 12, 0.8);
             border-bottom: 1px solid rgba(191, 139, 255, 0.15);
@@ -65,6 +117,18 @@
             color: var(--text-secondary);
             letter-spacing: 1px;
         }
+        .btn-reset {
+            position: absolute;
+            right: 15px; top: 15px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-secondary);
+            padding: 4px 8px;
+            border-radius: 5px;
+            font-size: 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
 
         .chat-log {
             flex: 1;
@@ -75,8 +139,6 @@
             overflow-y: auto;
             background: radial-gradient(circle at 50% 100%, rgba(20, 10, 40, 0.3), transparent 70%);
         }
-        .chat-log::-webkit-scrollbar { width: 4px; }
-        .chat-log::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
 
         .chat-row {
             background: var(--bg-card);
@@ -91,16 +153,15 @@
         }
         @media (min-width: 500px) {
             .chat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-            .text-en { border-right: 1px solid rgba(255,255,255,0.05); padding-right: 10px; }
+            .text-source { border-right: 1px solid rgba(255,255,255,0.05); padding-right: 10px; }
         }
 
-        .text-en { color: #e2e2e9; font-size: 14px; line-height: 1.4; }
+        .text-source { color: #e2e2e9; font-size: 14px; line-height: 1.4; }
         .text-vi { color: var(--neon-cyan); font-size: 14px; line-height: 1.4; text-shadow: 0 0 5px var(--neon-cyan-glow); transition: color 0.3s ease; }
 
         .footer-panel {
             background: var(--glass-bg);
             backdrop-filter: blur(15px) saturate(160%);
-            -webkit-backdrop-filter: blur(15px) saturate(160%);
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             padding: 12px 20px 20px 20px;
             display: flex;
@@ -143,35 +204,27 @@
             align-items: center;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             outline: none;
-            position: relative;
         }
 
         .btn-mic.off {
             background: rgba(191, 139, 255, 0.04);
             border: 1px solid rgba(191, 139, 255, 0.3);
             color: var(--neon-purple);
-            box-shadow: 
-                inset 0 4px 12px rgba(255, 255, 255, 0.05),
-                inset 0 -4px 12px rgba(0, 0, 0, 0.4),
-                0 4px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: inset 0 4px 12px rgba(255, 255, 255, 0.05), 0 4px 15px rgba(0, 0, 0, 0.3);
         }
-        .btn-mic.off svg { filter: drop-shadow(0 0 4px var(--neon-purple)); }
 
         .btn-mic.on {
             background: rgba(255, 42, 42, 0.15);
             border: 1px solid var(--neon-red);
             color: #ffffff;
-            box-shadow: 
-                inset 0 4px 10px rgba(255, 255, 255, 0.1),
-                0 0 20px rgba(255, 42, 42, 0.4);
+            box-shadow: 0 0 20px rgba(255, 42, 42, 0.4);
             animation: pulse-red 1.4s infinite;
         }
-        .btn-mic.on svg { filter: drop-shadow(0 0 6px #fff); }
 
         @keyframes pulse-red {
-            0% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 42, 42, 0.3); }
-            50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(255, 42, 42, 0.6); }
-            100% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 42, 42, 0.3); }
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
         @keyframes slide-in {
             from { opacity: 0; transform: translateY(6px); }
@@ -181,18 +234,21 @@
 </head>
 <body>
 
+<!-- MÀN HÌNH LỰA CHỌN TÍNH NĂNG -->
+<div id="welcome-screen" class="welcome-screen">
+    <div class="welcome-title">🎙️ CHỌN CHẾ ĐỘ PHIÊN DỊCH</div>
+    <div class="lang-option-btn en" onclick="selectLanguage('en')">🇬🇧 ENGLISH ➡️ TIẾNG VIỆT</div>
+    <div class="lang-option-btn ja" onclick="selectLanguage('ja')">🇯🇵 JAPANESE ➡️ TIẾNG VIỆT</div>
+</div>
+
 <div class="app-container">
     <div class="header">
-        <h2>🎙️ Neon Interpreter</h2>
-        <p>FULL SENTENCE BUFFER ➡️ DEBOUNCE 1.5S</p>
+        <h2 id="app-title">🎙️ Neon Interpreter</h2>
+        <p id="app-sub">CHƯA CẤU HÌNH</p>
+        <button class="btn-reset" onclick="resetLanguage()">Đổi Bộ Dịch</button>
     </div>
 
-    <div id="chat-log" class="chat-log">
-        <div class="chat-row" style="border-color: rgba(0, 240, 255, 0.15);">
-            <div class="text-en" style="font-style: italic; color: var(--text-secondary);">Speak a long sentence freely. The system will now bundle all words together before translating.</div>
-            <div class="text-vi" style="font-style: italic; color: rgba(0, 240, 255, 0.6);">Hãy nói một câu dài thoải mái. Hệ thống hiện tại sẽ gộp toàn bộ các từ lại rồi mới dịch.</div>
-        </div>
-    </div>
+    <div id="chat-log" class="chat-log"></div>
 
     <div class="footer-panel">
         <div id="interim-box" class="interim"></div>
@@ -209,40 +265,85 @@
     let recognition;
     let isListening = false;
     let silenceTimer = null;
-    
-    // SỬA LỖI NUỐT CHỮ: Bộ nhớ đệm giữ toàn bộ câu nói dài
     let finalBuffer = ""; 
 
+    // Biến lưu cấu hình động
+    let currentMode = {
+        micLang: 'en-US',
+        apiSl: 'en',
+        guideTextSrc: '',
+        guideTextVi: ''
+    };
+
+    const welcomeScreen = document.getElementById('welcome-screen');
+    const appSub = document.getElementById('app-sub');
     const btnToggle = document.getElementById('btn-toggle');
     const statusDiv = document.getElementById('status');
     const interimBox = document.getElementById('interim-box');
     const chatLog = document.getElementById('chat-log');
 
-    if (!SpeechRecognition) {
-        statusDiv.innerText = "HỆ THỐNG KHÔNG HỖ TRỢ TRÌNH DUYỆT NÀY";
-        btnToggle.style.display = 'none';
-    } else {
+    // Hàm gọi khi người dùng chọn tính năng
+    function selectLanguage(lang) {
+        if (lang === 'en') {
+            currentMode.micLang = 'en-US';
+            currentMode.apiSl = 'en';
+            currentMode.guideTextSrc = 'Speak a long sentence freely. The system will bundle all words together before translating.';
+            currentMode.guideTextVi = 'Hãy nói một câu dài thoải mái (Tiếng Anh). Hệ thống sẽ gộp toàn bộ từ lại rồi mới dịch.';
+            appSub.innerText = "ENGLISH ➡️ VIETNAMESE (BUFFER 1.5S)";
+        } else {
+            currentMode.micLang = 'ja-JP';
+            currentMode.apiSl = 'ja';
+            currentMode.guideTextSrc = '日本語で自由に話してください。システムがまとめて翻訳します。';
+            currentMode.guideTextVi = 'Hãy nói tiếng Nhật thoải mái. Hệ thống sẽ gộp toàn bộ câu lại rồi dịch sang tiếng Việt.';
+            appSub.innerText = "JAPANESE ➡️ VIETNAMESE (BUFFER 1.5S)";
+        }
+
+        // Ẩn màn hình chào đi
+        welcomeScreen.style.display = "none";
+        
+        // Khởi tạo hoặc cập nhật lại ngôn ngữ cho bộ nhận diện Mic
+        initSpeechRecognition();
+
+        // Thêm câu hướng dẫn mẫu vào khung chat log
+        chatLog.innerHTML = `
+            <div class="chat-row" style="border-color: rgba(0, 240, 255, 0.15);">
+                <div class="text-source" style="font-style: italic; color: var(--text-secondary);">${currentMode.guideTextSrc}</div>
+                <div class="text-vi" style="font-style: italic; color: rgba(0, 240, 255, 0.6);">${currentMode.guideTextVi}</div>
+            </div>
+        `;
+    }
+
+    // Hàm nhấn để quay lại màn hình chọn tính năng ban đầu
+    function resetLanguage() {
+        if (isListening) {
+            isListening = false;
+            recognition.stop();
+        }
+        welcomeScreen.style.display = "flex";
+    }
+
+    function initSpeechRecognition() {
+        if (!SpeechRecognition) {
+            statusDiv.innerText = "HỆ THỐNG KHÔNG HỖ TRỢ TRÌNH DUYỆT NÀY";
+            btnToggle.style.display = 'none';
+            return;
+        }
+
+        // Nếu đã có thực thể cũ, ngắt nó đi để tạo cấu hình mới
+        if (recognition) {
+            recognition.abort();
+        }
+
         recognition = new SpeechRecognition();
-        recognition.lang = 'en-US';
+        recognition.lang = currentMode.micLang; // Nhận diện động theo cấu hình đã chọn
         recognition.continuous = true; 
         recognition.interimResults = true;
 
-        btnToggle.addEventListener('click', () => {
-            if (!isListening) {
-                try {
-                    finalBuffer = "";
-                    recognition.start();
-                } catch(e) { console.log(e); }
-            } else {
-                isListening = false;
-                recognition.stop();
-            }
-        });
-
+        // Gắn lại toàn bộ sự kiện cho mic mới cấu hình
         recognition.onstart = () => {
             isListening = true;
             btnToggle.className = "btn-mic on";
-            statusDiv.innerText = "LISTENING... (HÃY NÓI ĐI)";
+            statusDiv.innerText = `LISTENING... (HÃY NÓI ${currentMode.apiSl === 'en' ? 'TIẾNG ANH' : 'TIẾNG NHẬT'})`;
             statusDiv.style.color = "var(--neon-red)";
         };
 
@@ -258,7 +359,6 @@
         recognition.onerror = (e) => {
             let errorMsg = e.error.toUpperCase();
             if (e.error === 'not-allowed') errorMsg = "LỖI: THIẾU LINK HTTPS / CHƯA CẤP QUYỀN MIC";
-            if (e.error === 'audio-capture') errorMsg = "LỖI: MIC BỊ APP KHÁC CHIẾM";
             statusDiv.innerText = errorMsg;
             statusDiv.style.color = "var(--neon-red)";
             btnToggle.className = "btn-mic off";
@@ -266,44 +366,35 @@
         };
 
         recognition.onresult = (event) => {
-            clearTimeout(silenceTimer); // Nhận thêm âm thanh mới -> hoãn dịch
+            clearTimeout(silenceTimer);
             
             let interimTranscript = '';
             let newFinals = '';
 
-            // Chỉ xử lý các kết quả mới từ resultIndex để cộng dồn vào finalBuffer
             for (let i = event.resultIndex; i < event.results.length; ++i) {
                 if (event.results[i].isFinal) {
-                    newFinals += event.results[i][0].transcript + " ";
+                    newFinals += event.results[i][0].transcript + (currentMode.apiSl === 'en' ? " " : "");
                 } else {
                     interimTranscript += event.results[i][0].transcript;
                 }
             }
 
-            // Cộng dồn chữ đã chốt vào bộ nhớ tổng
             finalBuffer += newFinals;
-
-            // Câu hoàn chỉnh = Tất cả chữ đã chốt trước đó + chữ đang nói dở (chữ nháp)
             let completeSentence = (finalBuffer + interimTranscript).trim();
 
             if (completeSentence !== "") {
-                // Hiển thị toàn bộ câu dài lên ô chữ nháp màu vàng để bạn kiểm tra
                 interimBox.style.display = "block";
                 interimBox.innerText = completeSentence;
                 statusDiv.innerText = "SPEAKING...";
                 statusDiv.style.color = "var(--neon-gold)";
 
-                // CHỜ ĐÚNG 1.5 GIÂY IM LẶNG HOÀN TOÀN MỚI CHỐT DỊCH
                 silenceTimer = setTimeout(() => {
                     let textToTranslate = completeSentence;
-                    
                     if (textToTranslate.trim() !== "") {
                         translateLine(textToTranslate.trim());
-                        
-                        // XÓA BỘ NHỚ ĐỆM để câu nói tiếp theo không bị dính chữ cũ
                         finalBuffer = ""; 
                         interimBox.style.display = "none";
-                        statusDiv.innerText = "LISTENING... (HÃY NÓI ĐI)";
+                        statusDiv.innerText = `LISTENING... (HÃY NÓI ${currentMode.apiSl === 'en' ? 'TIẾNG ANH' : 'TIẾNG NHẬT'})`;
                         statusDiv.style.color = "var(--neon-red)";
                     }
                 }, 1500);
@@ -311,30 +402,43 @@
         };
     }
 
-    async function translateLine(englishText) {
-        // Tạo khung hội thoại ảo ngay lập tức để tạo cảm giác mượt mà
+    // Sự kiện nút bấm kích hoạt mic chính
+    btnToggle.addEventListener('click', () => {
+        if (!recognition) return;
+        if (!isListening) {
+            try {
+                finalBuffer = "";
+                recognition.start();
+            } catch(e) { console.log(e); }
+        } else {
+            isListening = false;
+            recognition.stop();
+        }
+    });
+
+    async function translateLine(sourceText) {
         const row = document.createElement('div');
         row.className = 'chat-row';
         
-        const enDiv = document.createElement('div');
-        enDiv.className = 'text-en';
-        enDiv.innerText = englishText;
+        const srcDiv = document.createElement('div');
+        srcDiv.className = 'text-source';
+        srcDiv.innerText = sourceText;
 
         const viDiv = document.createElement('div');
         viDiv.className = 'text-vi';
         viDiv.innerText = "⚡ Đang dịch...";
         viDiv.style.color = "var(--text-secondary)";
 
-        row.appendChild(enDiv);
+        row.appendChild(srcDiv);
         row.appendChild(viDiv);
         chatLog.prepend(row); 
 
         setTimeout(() => chatLog.scrollTop = chatLog.scrollHeight, 50);
 
         try {
-            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURIComponent(englishText)}`;
+            // Sử dụng biến dynamic sl= của ngôn ngữ nguồn tương ứng lúc gửi sang Google
+            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${currentMode.apiSl}&tl=vi&dt=t&q=${encodeURIComponent(sourceText)}`;
             
-            // CƠ CHẾ CHỐNG TREO: Nếu Google không trả kết quả sau 5 giây, tự động hủy để báo lỗi
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 5000);
             
@@ -344,7 +448,7 @@
             const data = await response.json();
             if (data?.[0]?.[0]?.[0]) {
                 viDiv.innerText = data[0][0][0];
-                viDiv.style.color = "var(--neon-cyan)"; // Đổi lại màu neon cyan khi dịch xong
+                viDiv.style.color = "var(--neon-cyan)";
             } else {
                 viDiv.innerText = "❌ Lỗi định dạng dữ liệu Google.";
                 viDiv.style.color = "var(--neon-red)";
