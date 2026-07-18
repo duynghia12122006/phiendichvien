@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Trợ Lý Phiên Dịch Neon - Mobile Ultimate Fix</title>
+    <title>Trợ Lý Phiên Dịch Neon - Bẻ Khóa CORS Mobile</title>
     <style>
         :root {
             --bg-black: #06060c; 
@@ -254,9 +254,8 @@
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition = null;
     
-    // Quản lý trạng thái cốt lõi
-    let explicitlyStopped = true; // Người dùng chủ động bấm dừng hay không
-    let isListening = false;      // Trạng thái phần cứng thực tế
+    let explicitlyStopped = true; 
+    let isListening = false;      
     let silenceTimer = null;
     let finalBuffer = ""; 
 
@@ -289,7 +288,6 @@
         recognition.onend = () => {
             isListening = false;
             
-            // XỬ LÝ MOBILE: Nếu có chữ tồn đọng khi điện thoại sập mic, dịch luôn lập tức
             let pendingText = interimBox.innerText.trim();
             if (pendingText !== "") {
                 translateLine(pendingText);
@@ -298,13 +296,12 @@
                 interimBox.style.display = "none";
             }
 
-            // CƠ CHẾ HỒI SINH: Nếu không phải do người dùng bấm tắt, tự khởi động lại Mic bí mật
             if (!explicitlyStopped) {
                 setTimeout(() => {
                     if (!explicitlyStopped && !isListening) {
                         executeStartMic();
                     }
-                }, 300); // Khoảng nghỉ 300ms chống lỗi xung đột phần cứng di động
+                }, 300); 
             } else {
                 btnToggle.className = "btn-mic off";
                 statusDiv.innerText = "READY";
@@ -317,12 +314,11 @@
         recognition.onerror = (e) => {
             console.log("Speech Error:", e.error);
             if (e.error === 'not-allowed') {
-                statusDiv.innerText = "LỖI: HÃY DÙNG HTTPS / BẬT QUYỀN MIC CHROME/SAFARI";
+                statusDiv.innerText = "LỖI: CẦN HTTPS / CẤP QUYỀN MIC TRÌNH DUYỆT";
                 statusDiv.style.color = "var(--neon-red)";
                 explicitlyStopped = true;
                 btnToggle.className = "btn-mic off";
             }
-            // Các lỗi 'no-speech' hoặc nghẽn mạng trên mobile sẽ được bỏ qua để vòng lặp hồi sinh tự chạy tiếp
         };
 
         recognition.onresult = (event) => {
@@ -348,7 +344,6 @@
                 statusDiv.innerText = "SPEAKING...";
                 statusDiv.style.color = "var(--neon-gold)";
 
-                // Rút ngắn thời gian ngắt nghỉ xuống 1 giây cho mobile nhạy bén hơn
                 silenceTimer = setTimeout(() => {
                     if (completeSentence.trim() !== "") {
                         translateLine(completeSentence.trim());
@@ -356,7 +351,6 @@
                         interimBox.innerText = "";
                         interimBox.style.display = "none";
                         
-                        // Sau khi dịch xong câu dài, chủ động reset mic để giải phóng bộ nhớ đệm luồng âm thanh
                         if (!explicitlyStopped) {
                             recognition.stop(); 
                         }
@@ -365,7 +359,7 @@
             }
         };
     } else {
-        statusDiv.innerText = "THIẾT BỊ KHÔNG HỖ TRỢ ĐIỀU KHIỂN MIC KHÔNG DÂY";
+        statusDiv.innerText = "THIẾT BỊ KHÔNG HỖ TRỢ ĐIỀU KHIỂN MIC";
         btnToggle.style.display = 'none';
     }
 
@@ -373,15 +367,15 @@
         if (lang === 'en') {
             currentMode.micLang = 'en-US';
             currentMode.apiSl = 'en';
-            currentMode.guideTextSrc = 'Speak freely. The system auto-restarts on mobile to avoid disconnects.';
-            currentMode.guideTextVi = 'Hãy nói tiếng Anh. Hệ thống đã kích hoạt chế độ chống tự tắt mic trên điện thoại.';
-            appSub.innerText = "ENGLISH ➡️ VIETNAMESE (ANTI-DISCONNECT)";
+            currentMode.guideTextSrc = 'Speak freely. Giao thức dịch vượt tường lửa CORS di động đã kích hoạt.';
+            currentMode.guideTextVi = 'Hãy nói tiếng Anh. Bản vá lỗi dịch trên Mobile đã sẵn sàng.';
+            appSub.innerText = "ENGLISH ➡️ VIETNAMESE (CORS BYPASS)";
         } else {
             currentMode.micLang = 'ja-JP';
             currentMode.apiSl = 'ja';
-            currentMode.guideTextSrc = '日本語で話してください。モバイルの切断防止機能が有効です。';
-            currentMode.guideTextVi = 'Hãy nói tiếng Nhật. Hệ thống đã kích hoạt chế độ chống tự tắt mic trên điện thoại.';
-            appSub.innerText = "JAPANESE ➡️ VIETNAMESE (ANTI-DISCONNECT)";
+            currentMode.guideTextSrc = '日本語で話してください。モバイルのCORSバイパス機能が有効です。';
+            currentMode.guideTextVi = 'Hãy nói tiếng Nhật. Bản vá lỗi dịch trên Mobile đã sẵn sàng.';
+            appSub.innerText = "JAPANESE ➡️ VIETNAMESE (CORS BYPASS)";
         }
 
         welcomeScreen.style.display = "none";
@@ -402,17 +396,13 @@
         welcomeScreen.style.display = "flex";
     }
 
-    // Hàm gọi khởi chạy lõi cứng
     function executeStartMic() {
         try {
             recognition.lang = currentMode.micLang;
             recognition.start();
-        } catch(e) { 
-            console.log("Ignored crash command:", e.message); 
-        }
+        } catch(e) { console.log(e.message); }
     }
 
-    // Nhấp nút Mic ngoài giao diện chính
     btnToggle.addEventListener('click', () => {
         if (!recognition) return;
         if (explicitlyStopped) {
@@ -426,7 +416,8 @@
         }
     });
 
-    async function translateLine(sourceText) {
+    // GIẢI PHÁP TỐI HẬU: HÀM DỊCH SỬ DỤNG JSONP ĐỂ VƯỢT QUA TẤT CẢ TƯỜNG LỬA CORS TRÊN DI ĐỘNG
+    function translateLine(sourceText) {
         const row = document.createElement('div');
         row.className = 'chat-row';
         
@@ -445,32 +436,37 @@
 
         setTimeout(() => chatLog.scrollTop = chatLog.scrollHeight, 30);
 
-        try {
-            // Sử dụng API độc lập, không ép buộc thêm header để loại bỏ triệt để CORS trên mạng di động 3G/4G/5G
-            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${currentMode.apiSl}&tl=vi&dt=t&q=${encodeURIComponent(sourceText)}`;
-            
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 6000); // Nới rộng timeout xử lý mạng di động lên 6 giây
-            
-            const response = await fetch(url, { method: "GET", signal: controller.signal });
-            clearTimeout(timeoutId);
-            
-            const data = await response.json();
+        // Tạo tên callback ngẫu nhiên để không bị trùng lặp luồng dữ liệu
+        const callbackName = 'googleJsonp_' + Math.random().toString(36).substr(2, 9);
+        
+        // 1. Khởi tạo cổng hứng dữ liệu toàn cục cho JSONP
+        window[callbackName] = function(data) {
             if (data && data[0] && data[0][0] && data[0][0][0]) {
                 viDiv.innerText = data[0][0][0];
                 viDiv.style.color = "var(--neon-cyan)";
             } else {
-                viDiv.innerText = "❌ Lỗi phản hồi cấu trúc từ máy chủ dịch.";
+                viDiv.innerText = "❌ Lỗi cấu trúc phản hồi từ máy chủ.";
                 viDiv.style.color = "var(--neon-red)";
             }
-        } catch (error) {
-            if (error.name === 'AbortError') {
-                viDiv.innerText = "❌ Sóng yếu (Yêu cầu dịch quá 6 giây).";
-            } else {
-                viDiv.innerText = "❌ Không thể kết nối cổng dịch (Kiểm tra HTTPS).";
-            }
+            // Dọn dẹp thẻ script và biến sau khi nhận xong dữ liệu
+            delete window[callbackName];
+            document.getElementById(callbackName)?.remove();
+        };
+
+        // 2. Tiêm thẻ <script> để tải ngầm phản hồi bypass hoàn toàn CORS
+        const script = document.createElement('script');
+        script.id = callbackName;
+        script.src = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${currentMode.apiSl}&tl=vi&dt=t&q=${encodeURIComponent(sourceText)}&callback=${callbackName}`;
+        
+        // Bắt lỗi nếu đường truyền mạng di động bị sập hẳn
+        script.onerror = function() {
+            viDiv.innerText = "❌ Lỗi mạng hoặc máy chủ dịch bị nghẽn.";
             viDiv.style.color = "var(--neon-red)";
-        }
+            delete window[callbackName];
+            script.remove();
+        };
+
+        document.body.appendChild(script);
     }
 </script>
 
