@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Trợ Lý Phiên Dịch Neon Glass - Mobile Fix</title>
+    <title>Trợ Lý Phiên Dịch Neon - Mobile Stable</title>
     <style>
         :root {
             --bg-black: #06060c; 
             --bg-card: rgba(18, 18, 36, 0.7);  
             --neon-purple: #bf8bff; 
-            --neon-purple-glow: rgba(191, 139, 255, 0.3);
             --neon-cyan: #00f0ff;  
             --neon-cyan-glow: rgba(0, 240, 255, 0.4);
             --neon-gold: #ffe600; 
@@ -130,6 +129,8 @@
             color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 1px;
+            text-align: center;
+            font-weight: bold;
         }
 
         .btn-mic {
@@ -183,13 +184,13 @@
 <div class="app-container">
     <div class="header">
         <h2>🎙️ Neon Interpreter</h2>
-        <p>MOBILE OPTIMIZED ➡️ DELAY 1.5S</p>
+        <p>STABLE ENGINE ➡️ DEBOUNCE 1.5S</p>
     </div>
 
     <div id="chat-log" class="chat-log">
         <div class="chat-row" style="border-color: rgba(0, 240, 255, 0.15);">
-            <div class="text-en" style="font-style: italic; color: var(--text-secondary);">Important: The URL must start with HTTPS:// for the microphone engine to work on mobile.</div>
-            <div class="text-vi" style="font-style: italic; color: rgba(0, 240, 255, 0.6);">Quan trọng: Đường link phải bắt đầu bằng HTTPS:// thì lõi mic trên điện thoại mới hoạt động.</div>
+            <div class="text-en" style="font-style: italic; color: var(--text-secondary);">System check active. Watch the status text below for any mobile hardware restrictions.</div>
+            <div class="text-vi" style="font-style: italic; color: rgba(0, 240, 255, 0.6);">Hệ thống kiểm tra đang chạy. Hãy nhìn dòng trạng thái phía dưới để biết lỗi phần cứng nếu có.</div>
         </div>
     </div>
 
@@ -206,9 +207,9 @@
 <script>
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition;
-    let isListening = false; // Trạng thái người dùng muốn BẬT hay TẮT ứng dụng
+    let isListening = false;
     let silenceTimer = null;
-    let currentSentence = ""; 
+    let accumulatedText = ""; 
 
     const btnToggle = document.getElementById('btn-toggle');
     const statusDiv = document.getElementById('status');
@@ -216,66 +217,62 @@
     const chatLog = document.getElementById('chat-log');
 
     if (!SpeechRecognition) {
-        statusDiv.innerText = "NOT SUPPORTED";
+        statusDiv.innerText = "HỆ THỐNG KHÔNG HỖ TRỢ TRÌNH DUYỆT NÀY";
         btnToggle.style.display = 'none';
     } else {
         recognition = new SpeechRecognition();
         recognition.lang = 'en-US';
-        
-        // --- THAY ĐỔI CỐT LÕI CHO MOBILE ---
-        recognition.continuous = false; // Tắt continuous gốc của trình duyệt để tránh bug treo trên mobile
-        recognition.interimResults = true; // Vẫn lấy chữ nháp thời gian thực
+        recognition.continuous = true; // Sử dụng lại continuous chuẩn để duy trì kết nối ổn định
+        recognition.interimResults = true;
 
-        // Khi người dùng bấm nút Bật/Tắt chủ động
         btnToggle.addEventListener('click', () => {
             if (!isListening) {
-                isListening = true;
-                startRecognitionEngine();
+                try {
+                    accumulatedText = "";
+                    recognition.start();
+                } catch(e) {
+                    console.log(e);
+                }
             } else {
                 isListening = false;
                 recognition.stop();
-                clearTimeout(silenceTimer);
-                currentSentence = "";
             }
         });
 
-        // Hàm khởi chạy engine thu âm độc lập
-        function startRecognitionEngine() {
-            try {
-                recognition.start();
-            } catch(e) {
-                console.log("Engine đang chạy sẵn...");
-            }
-        }
-
         recognition.onstart = () => {
+            isListening = true;
             btnToggle.className = "btn-mic on";
-            statusDiv.innerText = "LISTENING...";
+            statusDiv.innerText = "LISTENING... (HÃY NÓI ĐI)";
             statusDiv.style.color = "var(--neon-red)";
         };
 
-        // --- THUẬT TOÁN VÒNG LẶP VÔ HẠN CHO MOBILE ---
         recognition.onend = () => {
-            // Nếu người dùng CHƯA bấm nút tắt chủ động, tự động kích hoạt lại mic ngay lập tức câu tiếp theo
-            if (isListening) {
-                startRecognitionEngine();
-            } else {
-                btnToggle.className = "btn-mic off";
-                statusDiv.innerText = "READY";
-                statusDiv.style.color = "var(--text-secondary)";
-                interimBox.style.display = "none";
-            }
+            isListening = false;
+            btnToggle.className = "btn-mic off";
+            statusDiv.innerText = "READY";
+            statusDiv.style.color = "var(--text-secondary)";
+            interimBox.style.display = "none";
+            clearTimeout(silenceTimer);
         };
 
+        // --- BỘ BẮT LỖI PHẦN CỨNG CHI TIẾT ---
         recognition.onerror = (e) => {
-            console.log("Speech error: ", e.error);
+            let errorMsg = e.error.toUpperCase();
             if (e.error === 'not-allowed') {
-                statusDiv.innerText = "MIC BLOCKED BY BROWSER";
+                errorMsg = "LỖI: CHƯA CHẠY LINK HTTPS HOẶC CHƯA CHO PHÉP MIC";
+            } else if (e.error === 'audio-capture') {
+                errorMsg = "LỖI: MIC ĐANG BỊ ỨNG DỤNG KHÁC CHIẾM GIỮ";
+            } else if (e.error === 'network') {
+                errorMsg = "LỖI: MẤT KẾT NỐI MẠNG";
             }
+            statusDiv.innerText = errorMsg;
+            statusDiv.style.color = "var(--neon-red)";
+            btnToggle.className = "btn-mic off";
+            isListening = false;
         };
 
         recognition.onresult = (event) => {
-            clearTimeout(silenceTimer); // Xóa đếm ngược mỗi khi có âm thanh mới
+            clearTimeout(silenceTimer); // Reset bộ đếm khi nhận được âm thanh
             
             let interimTranscript = '';
             let finalTranscript = '';
@@ -288,30 +285,24 @@
                 }
             }
 
-            // Cập nhật nội dung chuỗi chữ dựa trên những gì thu được
-            if (finalTranscript) {
-                currentSentence = finalTranscript;
-            } else if (interimTranscript) {
-                currentSentence = interimTranscript;
-            }
+            // Kết hợp chuỗi từ kết quả cuối cùng hoặc chữ nháp
+            let textToDisplay = finalTranscript || interimTranscript;
 
-            // Hiển thị chữ nháp màu vàng nhấp nháy liên tục khi đang nói
-            if (currentSentence) {
+            if (textToDisplay.trim() !== "") {
                 interimBox.style.display = "block";
-                interimBox.innerText = currentSentence;
+                interimBox.innerText = textToDisplay;
                 statusDiv.innerText = "SPEAKING...";
                 statusDiv.style.color = "var(--neon-gold)";
-            }
 
-            // ĐẾM NGƯỢC 1.5 GIÂY IM LẶNG HOÀN TOÀN TRÊN MOBILE
-            silenceTimer = setTimeout(() => {
-                if (currentSentence.trim() !== '') {
-                    translateLine(currentSentence.trim());
-                    // Xóa bộ nhớ đệm câu cũ để chuẩn bị nghe câu mới tinh từ vòng lặp sau
-                    currentSentence = ""; 
-                    interimBox.style.style.display = "none";
-                }
-            }, 1500);
+                // THUẬT TOÁN ĐỢI 1.5 GIÂY IM LẶNG HOÀN TOÀN
+                silenceTimer = setTimeout(() => {
+                    translateLine(textToDisplay.trim());
+                    // Xóa màn hình nháp sau khi đẩy dịch
+                    interimBox.style.display = "none";
+                    statusDiv.innerText = "LISTENING... (HÃY NÓI ĐI)";
+                    statusDiv.style.color = "var(--neon-red)";
+                }, 1500);
+            }
         };
     }
 
