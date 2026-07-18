@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Trợ Lý Phiên Dịch Neon Dual-Lang</title>
+    <title>Trợ Lý Phiên Dịch Neon Dual-Lang Mobile Fix</title>
     <style>
         :root {
             --bg-black: #06060c; 
@@ -48,7 +48,7 @@
         }
         .welcome-title {
             color: var(--text-primary);
-            font-size: 20px;
+            font-size: 18px;
             margin-bottom: 30px;
             letter-spacing: 2px;
             text-transform: uppercase;
@@ -61,27 +61,28 @@
             padding: 18px;
             margin: 12px 0;
             border-radius: 12px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
             color: #fff;
             background: var(--bg-card);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s ease;
             text-align: center;
+            border: 1px solid transparent;
         }
         .lang-option-btn.en {
-            border: 1px solid var(--neon-purple);
+            border-color: var(--neon-purple);
             box-shadow: 0 0 10px rgba(191, 139, 255, 0.15);
         }
-        .lang-option-btn.en:shadow-hover { box-shadow: 0 0 20px var(--neon-purple); }
-        .lang-option-btn.en:active { transform: scale(0.98); background: rgba(191, 139, 255, 0.1); }
+        .lang-option-btn.en:hover { box-shadow: 0 0 20px var(--neon-purple); background: rgba(191, 139, 255, 0.05); }
+        .lang-option-btn.en:active { transform: scale(0.98); }
         
         .lang-option-btn.ja {
-            border: 1px solid var(--neon-cyan);
+            border-color: var(--neon-cyan);
             box-shadow: 0 0 10px rgba(0, 240, 255, 0.15);
         }
-        .lang-option-btn.ja:shadow-hover { box-shadow: 0 0 20px var(--neon-cyan); }
-        .lang-option-btn.ja:active { transform: scale(0.98); background: rgba(0, 240, 255, 0.1); }
+        .lang-option-btn.ja:hover { box-shadow: 0 0 20px var(--neon-cyan); background: rgba(0, 240, 255, 0.05); }
+        .lang-option-btn.ja:active { transform: scale(0.98); }
 
         /* GIAO DIỆN CHÍNH */
         .app-container {
@@ -102,30 +103,31 @@
             background: rgba(6, 6, 12, 0.8);
             border-bottom: 1px solid rgba(191, 139, 255, 0.15);
             backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
         .header h2 {
             margin: 0;
-            font-size: 16px;
+            font-size: 15px;
             color: var(--neon-purple);
             text-transform: uppercase;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             text-shadow: 0 0 8px var(--neon-purple);
         }
         .header p {
             margin: 3px 0 0;
-            font-size: 10px;
+            font-size: 9px;
             color: var(--text-secondary);
             letter-spacing: 1px;
         }
         .btn-reset {
             position: absolute;
-            right: 15px; top: 15px;
+            right: 12px; top: 12px;
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
             color: var(--text-secondary);
-            padding: 4px 8px;
+            padding: 5px 8px;
             border-radius: 5px;
-            font-size: 10px;
+            font-size: 9px;
             cursor: pointer;
             text-transform: uppercase;
         }
@@ -146,6 +148,7 @@
             border-radius: 10px;
             border: 1px solid var(--glass-border);
             backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
             display: flex;
             flex-direction: column;
             gap: 6px;
@@ -162,8 +165,9 @@
         .footer-panel {
             background: var(--glass-bg);
             backdrop-filter: blur(15px) saturate(160%);
+            -webkit-backdrop-filter: blur(15px) saturate(160%);
             border-top: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 12px 20px 20px 20px;
+            padding: 12px 20px 25px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -186,7 +190,7 @@
         }
 
         .status {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -202,7 +206,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.3s ease;
             outline: none;
         }
 
@@ -223,7 +227,7 @@
 
         @keyframes pulse-red {
             0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            50% { transform: scale(1.04); }
             100% { transform: scale(1); }
         }
         @keyframes slide-in {
@@ -262,12 +266,11 @@
 
 <script>
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    let recognition;
+    let recognition = null;
     let isListening = false;
     let silenceTimer = null;
     let finalBuffer = ""; 
 
-    // Biến lưu cấu hình động
     let currentMode = {
         micLang: 'en-US',
         apiSl: 'en',
@@ -282,68 +285,16 @@
     const interimBox = document.getElementById('interim-box');
     const chatLog = document.getElementById('chat-log');
 
-    // Hàm gọi khi người dùng chọn tính năng
-    function selectLanguage(lang) {
-        if (lang === 'en') {
-            currentMode.micLang = 'en-US';
-            currentMode.apiSl = 'en';
-            currentMode.guideTextSrc = 'Speak a long sentence freely. The system will bundle all words together before translating.';
-            currentMode.guideTextVi = 'Hãy nói một câu dài thoải mái (Tiếng Anh). Hệ thống sẽ gộp toàn bộ từ lại rồi mới dịch.';
-            appSub.innerText = "ENGLISH ➡️ VIETNAMESE (BUFFER 1.5S)";
-        } else {
-            currentMode.micLang = 'ja-JP';
-            currentMode.apiSl = 'ja';
-            currentMode.guideTextSrc = '日本語で自由に話してください。システムがまとめて翻訳します。';
-            currentMode.guideTextVi = 'Hãy nói tiếng Nhật thoải mái. Hệ thống sẽ gộp toàn bộ câu lại rồi dịch sang tiếng Việt.';
-            appSub.innerText = "JAPANESE ➡️ VIETNAMESE (BUFFER 1.5S)";
-        }
-
-        // Ẩn màn hình chào đi
-        welcomeScreen.style.display = "none";
-        
-        // Khởi tạo hoặc cập nhật lại ngôn ngữ cho bộ nhận diện Mic
-        initSpeechRecognition();
-
-        // Thêm câu hướng dẫn mẫu vào khung chat log
-        chatLog.innerHTML = `
-            <div class="chat-row" style="border-color: rgba(0, 240, 255, 0.15);">
-                <div class="text-source" style="font-style: italic; color: var(--text-secondary);">${currentMode.guideTextSrc}</div>
-                <div class="text-vi" style="font-style: italic; color: rgba(0, 240, 255, 0.6);">${currentMode.guideTextVi}</div>
-            </div>
-        `;
-    }
-
-    // Hàm nhấn để quay lại màn hình chọn tính năng ban đầu
-    function resetLanguage() {
-        if (isListening) {
-            isListening = false;
-            recognition.stop();
-        }
-        welcomeScreen.style.display = "flex";
-    }
-
-    function initSpeechRecognition() {
-        if (!SpeechRecognition) {
-            statusDiv.innerText = "HỆ THỐNG KHÔNG HỖ TRỢ TRÌNH DUYỆT NÀY";
-            btnToggle.style.display = 'none';
-            return;
-        }
-
-        // Nếu đã có thực thể cũ, ngắt nó đi để tạo cấu hình mới
-        if (recognition) {
-            recognition.abort();
-        }
-
+    // KHỞI TẠO MIC CỐ ĐỊNH NGAY TỪ ĐẦU (Tối ưu tuyệt đối cho Mobile)
+    if (SpeechRecognition) {
         recognition = new SpeechRecognition();
-        recognition.lang = currentMode.micLang; // Nhận diện động theo cấu hình đã chọn
         recognition.continuous = true; 
         recognition.interimResults = true;
 
-        // Gắn lại toàn bộ sự kiện cho mic mới cấu hình
         recognition.onstart = () => {
             isListening = true;
             btnToggle.className = "btn-mic on";
-            statusDiv.innerText = `LISTENING... (HÃY NÓI ${currentMode.apiSl === 'en' ? 'TIẾNG ANH' : 'TIẾNG NHẬT'})`;
+            statusDiv.innerText = `LISTENING... (NÓI ${currentMode.apiSl === 'en' ? 'TIẾNG ANH' : 'TIẾNG NHẬT'})`;
             statusDiv.style.color = "var(--neon-red)";
         };
 
@@ -352,13 +303,22 @@
             btnToggle.className = "btn-mic off";
             statusDiv.innerText = "READY";
             statusDiv.style.color = "var(--text-secondary)";
+            
+            // FIX MOBILE: Nếu điện thoại tự động tắt Mic đột ngột mà vẫn còn chữ chưa dịch, ép dịch luôn!
+            let pendingText = interimBox.innerText.trim();
+            if (pendingText !== "") {
+                translateLine(pendingText);
+                finalBuffer = "";
+                interimBox.innerText = "";
+            }
+            
             interimBox.style.display = "none";
             clearTimeout(silenceTimer);
         };
 
         recognition.onerror = (e) => {
             let errorMsg = e.error.toUpperCase();
-            if (e.error === 'not-allowed') errorMsg = "LỖI: THIẾU LINK HTTPS / CHƯA CẤP QUYỀN MIC";
+            if (e.error === 'not-allowed') errorMsg = "LỖI: HÃY DÙNG LINK HTTPS / CẤP QUYỀN MIC";
             statusDiv.innerText = errorMsg;
             statusDiv.style.color = "var(--neon-red)";
             btnToggle.className = "btn-mic off";
@@ -388,30 +348,66 @@
                 statusDiv.innerText = "SPEAKING...";
                 statusDiv.style.color = "var(--neon-gold)";
 
+                // Chờ người dùng dừng hẳn 1.5 giây để đóng gói câu dịch
                 silenceTimer = setTimeout(() => {
-                    let textToTranslate = completeSentence;
-                    if (textToTranslate.trim() !== "") {
-                        translateLine(textToTranslate.trim());
+                    if (completeSentence.trim() !== "") {
+                        translateLine(completeSentence.trim());
                         finalBuffer = ""; 
+                        interimBox.innerText = ""; // Xóa bộ đệm text để tránh trùng lập khi onend chạy
                         interimBox.style.display = "none";
-                        statusDiv.innerText = `LISTENING... (HÃY NÓI ${currentMode.apiSl === 'en' ? 'TIẾNG ANH' : 'TIẾNG NHẬT'})`;
+                        statusDiv.innerText = `LISTENING... (NÓI ${currentMode.apiSl === 'en' ? 'TIẾNG ANH' : 'TIẾNG NHẬT'})`;
                         statusDiv.style.color = "var(--neon-red)";
                     }
                 }, 1500);
             }
         };
+    } else {
+        statusDiv.innerText = "ĐIỆN THOẠI/TRÌNH DUYỆT KHÔNG HỖ TRỢ CHỨC NĂNG MIC";
+        btnToggle.style.display = 'none';
     }
 
-    // Sự kiện nút bấm kích hoạt mic chính
+    function selectLanguage(lang) {
+        if (lang === 'en') {
+            currentMode.micLang = 'en-US';
+            currentMode.apiSl = 'en';
+            currentMode.guideTextSrc = 'Speak a long sentence freely. The system will bundle all words together before translating.';
+            currentMode.guideTextVi = 'Hãy nói một câu tiếng Anh thoải mái. Hệ thống sẽ gộp toàn bộ từ lại rồi mới dịch.';
+            appSub.innerText = "ENGLISH ➡️ VIETNAMESE (BUFFER 1.5S)";
+        } else {
+            currentMode.micLang = 'ja-JP';
+            currentMode.apiSl = 'ja';
+            currentMode.guideTextSrc = '日本語で自由に話してください。システムがまとめて翻訳します。';
+            currentMode.guideTextVi = 'Hãy nói tiếng Nhật thoải mái. Hệ thống sẽ gộp toàn bộ câu lại rồi dịch sang tiếng Việt.';
+            appSub.innerText = "JAPANESE ➡️ VIETNAMESE (BUFFER 1.5S)";
+        }
+
+        welcomeScreen.style.display = "none";
+        
+        chatLog.innerHTML = `
+            <div class="chat-row" style="border-color: rgba(0, 240, 255, 0.15);">
+                <div class="text-source" style="font-style: italic; color: var(--text-secondary);">${currentMode.guideTextSrc}</div>
+                <div class="text-vi" style="font-style: italic; color: rgba(0, 240, 255, 0.6);">${currentMode.guideTextVi}</div>
+            </div>
+        `;
+    }
+
+    function resetLanguage() {
+        if (isListening && recognition) {
+            recognition.stop();
+        }
+        welcomeScreen.style.display = "flex";
+    }
+
+    // Sự kiện tương tác bật tắt Mic trực tiếp
     btnToggle.addEventListener('click', () => {
         if (!recognition) return;
         if (!isListening) {
             try {
                 finalBuffer = "";
+                recognition.lang = currentMode.micLang; // Nạp cấu hình ngôn ngữ ngay khi chạm nút
                 recognition.start();
             } catch(e) { console.log(e); }
         } else {
-            isListening = false;
             recognition.stop();
         }
     });
@@ -436,7 +432,6 @@
         setTimeout(() => chatLog.scrollTop = chatLog.scrollHeight, 50);
 
         try {
-            // Sử dụng biến dynamic sl= của ngôn ngữ nguồn tương ứng lúc gửi sang Google
             const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${currentMode.apiSl}&tl=vi&dt=t&q=${encodeURIComponent(sourceText)}`;
             
             const controller = new AbortController();
