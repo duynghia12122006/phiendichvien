@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Trợ Lý Phiên Dịch Neon - Mobile Stable</title>
+    <title>Trợ Lý Phiên Dịch Neon - V2 Perfect</title>
     <style>
         :root {
             --bg-black: #06060c; 
@@ -95,7 +95,7 @@
         }
 
         .text-en { color: #e2e2e9; font-size: 14px; line-height: 1.4; }
-        .text-vi { color: var(--neon-cyan); font-size: 14px; line-height: 1.4; text-shadow: 0 0 5px var(--neon-cyan-glow); }
+        .text-vi { color: var(--neon-cyan); font-size: 14px; line-height: 1.4; text-shadow: 0 0 5px var(--neon-cyan-glow); transition: color 0.3s ease; }
 
         .footer-panel {
             background: var(--glass-bg);
@@ -184,13 +184,13 @@
 <div class="app-container">
     <div class="header">
         <h2>🎙️ Neon Interpreter</h2>
-        <p>STABLE ENGINE ➡️ DEBOUNCE 1.5S</p>
+        <p>FULL SENTENCE BUFFER ➡️ DEBOUNCE 1.5S</p>
     </div>
 
     <div id="chat-log" class="chat-log">
         <div class="chat-row" style="border-color: rgba(0, 240, 255, 0.15);">
-            <div class="text-en" style="font-style: italic; color: var(--text-secondary);">System check active. Watch the status text below for any mobile hardware restrictions.</div>
-            <div class="text-vi" style="font-style: italic; color: rgba(0, 240, 255, 0.6);">Hệ thống kiểm tra đang chạy. Hãy nhìn dòng trạng thái phía dưới để biết lỗi phần cứng nếu có.</div>
+            <div class="text-en" style="font-style: italic; color: var(--text-secondary);">Speak a long sentence freely. The system will now bundle all words together before translating.</div>
+            <div class="text-vi" style="font-style: italic; color: rgba(0, 240, 255, 0.6);">Hãy nói một câu dài thoải mái. Hệ thống hiện tại sẽ gộp toàn bộ các từ lại rồi mới dịch.</div>
         </div>
     </div>
 
@@ -209,7 +209,9 @@
     let recognition;
     let isListening = false;
     let silenceTimer = null;
-    let accumulatedText = ""; 
+    
+    // SỬA LỖI NUỐT CHỮ: Bộ nhớ đệm giữ toàn bộ câu nói dài
+    let finalBuffer = ""; 
 
     const btnToggle = document.getElementById('btn-toggle');
     const statusDiv = document.getElementById('status');
@@ -222,17 +224,15 @@
     } else {
         recognition = new SpeechRecognition();
         recognition.lang = 'en-US';
-        recognition.continuous = true; // Sử dụng lại continuous chuẩn để duy trì kết nối ổn định
+        recognition.continuous = true; 
         recognition.interimResults = true;
 
         btnToggle.addEventListener('click', () => {
             if (!isListening) {
                 try {
-                    accumulatedText = "";
+                    finalBuffer = "";
                     recognition.start();
-                } catch(e) {
-                    console.log(e);
-                }
+                } catch(e) { console.log(e); }
             } else {
                 isListening = false;
                 recognition.stop();
@@ -255,16 +255,10 @@
             clearTimeout(silenceTimer);
         };
 
-        // --- BỘ BẮT LỖI PHẦN CỨNG CHI TIẾT ---
         recognition.onerror = (e) => {
             let errorMsg = e.error.toUpperCase();
-            if (e.error === 'not-allowed') {
-                errorMsg = "LỖI: CHƯA CHẠY LINK HTTPS HOẶC CHƯA CHO PHÉP MIC";
-            } else if (e.error === 'audio-capture') {
-                errorMsg = "LỖI: MIC ĐANG BỊ ỨNG DỤNG KHÁC CHIẾM GIỮ";
-            } else if (e.error === 'network') {
-                errorMsg = "LỖI: MẤT KẾT NỐI MẠNG";
-            }
+            if (e.error === 'not-allowed') errorMsg = "LỖI: THIẾU LINK HTTPS / CHƯA CẤP QUYỀN MIC";
+            if (e.error === 'audio-capture') errorMsg = "LỖI: MIC BỊ APP KHÁC CHIẾM";
             statusDiv.innerText = errorMsg;
             statusDiv.style.color = "var(--neon-red)";
             btnToggle.className = "btn-mic off";
@@ -272,41 +266,53 @@
         };
 
         recognition.onresult = (event) => {
-            clearTimeout(silenceTimer); // Reset bộ đếm khi nhận được âm thanh
+            clearTimeout(silenceTimer); // Nhận thêm âm thanh mới -> hoãn dịch
             
             let interimTranscript = '';
-            let finalTranscript = '';
+            let newFinals = '';
 
+            // Chỉ xử lý các kết quả mới từ resultIndex để cộng dồn vào finalBuffer
             for (let i = event.resultIndex; i < event.results.length; ++i) {
                 if (event.results[i].isFinal) {
-                    finalTranscript += event.results[i][0].transcript;
+                    newFinals += event.results[i][0].transcript + " ";
                 } else {
                     interimTranscript += event.results[i][0].transcript;
                 }
             }
 
-            // Kết hợp chuỗi từ kết quả cuối cùng hoặc chữ nháp
-            let textToDisplay = finalTranscript || interimTranscript;
+            // Cộng dồn chữ đã chốt vào bộ nhớ tổng
+            finalBuffer += newFinals;
 
-            if (textToDisplay.trim() !== "") {
+            // Câu hoàn chỉnh = Tất cả chữ đã chốt trước đó + chữ đang nói dở (chữ nháp)
+            let completeSentence = (finalBuffer + interimTranscript).trim();
+
+            if (completeSentence !== "") {
+                // Hiển thị toàn bộ câu dài lên ô chữ nháp màu vàng để bạn kiểm tra
                 interimBox.style.display = "block";
-                interimBox.innerText = textToDisplay;
+                interimBox.innerText = completeSentence;
                 statusDiv.innerText = "SPEAKING...";
                 statusDiv.style.color = "var(--neon-gold)";
 
-                // THUẬT TOÁN ĐỢI 1.5 GIÂY IM LẶNG HOÀN TOÀN
+                // CHỜ ĐÚNG 1.5 GIÂY IM LẶNG HOÀN TOÀN MỚI CHỐT DỊCH
                 silenceTimer = setTimeout(() => {
-                    translateLine(textToDisplay.trim());
-                    // Xóa màn hình nháp sau khi đẩy dịch
-                    interimBox.style.display = "none";
-                    statusDiv.innerText = "LISTENING... (HÃY NÓI ĐI)";
-                    statusDiv.style.color = "var(--neon-red)";
+                    let textToTranslate = completeSentence;
+                    
+                    if (textToTranslate.trim() !== "") {
+                        translateLine(textToTranslate.trim());
+                        
+                        // XÓA BỘ NHỚ ĐỆM để câu nói tiếp theo không bị dính chữ cũ
+                        finalBuffer = ""; 
+                        interimBox.style.display = "none";
+                        statusDiv.innerText = "LISTENING... (HÃY NÓI ĐI)";
+                        statusDiv.style.color = "var(--neon-red)";
+                    }
                 }, 1500);
             }
         };
     }
 
     async function translateLine(englishText) {
+        // Tạo khung hội thoại ảo ngay lập tức để tạo cảm giác mượt mà
         const row = document.createElement('div');
         row.className = 'chat-row';
         
@@ -316,7 +322,8 @@
 
         const viDiv = document.createElement('div');
         viDiv.className = 'text-vi';
-        viDiv.innerText = "...";
+        viDiv.innerText = "⚡ Đang dịch...";
+        viDiv.style.color = "var(--text-secondary)";
 
         row.appendChild(enDiv);
         row.appendChild(viDiv);
@@ -326,15 +333,29 @@
 
         try {
             const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURIComponent(englishText)}`;
-            const response = await fetch(url);
+            
+            // CƠ CHẾ CHỐNG TREO: Nếu Google không trả kết quả sau 5 giây, tự động hủy để báo lỗi
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
+            
+            const response = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            
             const data = await response.json();
             if (data?.[0]?.[0]?.[0]) {
                 viDiv.innerText = data[0][0][0];
+                viDiv.style.color = "var(--neon-cyan)"; // Đổi lại màu neon cyan khi dịch xong
             } else {
-                viDiv.innerText = "Translation error.";
+                viDiv.innerText = "❌ Lỗi định dạng dữ liệu Google.";
+                viDiv.style.color = "var(--neon-red)";
             }
         } catch (error) {
-            viDiv.innerText = "Network error.";
+            if (error.name === 'AbortError') {
+                viDiv.innerText = "❌ Mạng chậm (Google phản hồi quá 5s).";
+            } else {
+                viDiv.innerText = "❌ Lỗi kết nối hoặc Google chặn IP tạm thời.";
+            }
+            viDiv.style.color = "var(--neon-red)";
         }
     }
 </script>
