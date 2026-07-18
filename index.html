@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Trợ Lý Phiên Dịch Neon Dual-Lang Mobile Fix</title>
+    <title>Trợ Lý Phiên Dịch Neon - Mobile Ultimate Fix</title>
     <style>
         :root {
             --bg-black: #06060c; 
@@ -33,7 +33,7 @@
             overflow: hidden;
         }
 
-        /* MÀN HÌNH CHỌN TÍNH NĂNG LÚC MỞ APP */
+        /* WELCOME OVERLAY */
         .welcome-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -70,21 +70,12 @@
             text-align: center;
             border: 1px solid transparent;
         }
-        .lang-option-btn.en {
-            border-color: var(--neon-purple);
-            box-shadow: 0 0 10px rgba(191, 139, 255, 0.15);
-        }
-        .lang-option-btn.en:hover { box-shadow: 0 0 20px var(--neon-purple); background: rgba(191, 139, 255, 0.05); }
-        .lang-option-btn.en:active { transform: scale(0.98); }
-        
-        .lang-option-btn.ja {
-            border-color: var(--neon-cyan);
-            box-shadow: 0 0 10px rgba(0, 240, 255, 0.15);
-        }
-        .lang-option-btn.ja:hover { box-shadow: 0 0 20px var(--neon-cyan); background: rgba(0, 240, 255, 0.05); }
-        .lang-option-btn.ja:active { transform: scale(0.98); }
+        .lang-option-btn.en { border-color: var(--neon-purple); box-shadow: 0 0 10px rgba(191, 139, 255, 0.15); }
+        .lang-option-btn.en:active { background: rgba(191, 139, 255, 0.2); transform: scale(0.97); }
+        .lang-option-btn.ja { border-color: var(--neon-cyan); box-shadow: 0 0 10px rgba(0, 240, 255, 0.15); }
+        .lang-option-btn.ja:active { background: rgba(0, 240, 255, 0.2); transform: scale(0.97); }
 
-        /* GIAO DIỆN CHÍNH */
+        /* MAIN APP */
         .app-container {
             display: flex;
             flex-direction: column;
@@ -129,7 +120,6 @@
             border-radius: 5px;
             font-size: 9px;
             cursor: pointer;
-            text-transform: uppercase;
         }
 
         .chat-log {
@@ -152,27 +142,26 @@
             display: flex;
             flex-direction: column;
             gap: 6px;
-            animation: slide-in 0.25s ease-out;
+            animation: slide-in 0.22s ease-out;
         }
         @media (min-width: 500px) {
             .chat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
             .text-source { border-right: 1px solid rgba(255,255,255,0.05); padding-right: 10px; }
         }
 
-        .text-source { color: #e2e2e9; font-size: 14px; line-height: 1.4; }
-        .text-vi { color: var(--neon-cyan); font-size: 14px; line-height: 1.4; text-shadow: 0 0 5px var(--neon-cyan-glow); transition: color 0.3s ease; }
+        .text-source { color: #e2e2e9; font-size: 14px; line-height: 1.4; word-break: break-word; }
+        .text-vi { color: var(--neon-cyan); font-size: 14px; line-height: 1.4; text-shadow: 0 0 5px var(--neon-cyan-glow); word-break: break-word; }
 
         .footer-panel {
             background: var(--glass-bg);
-            backdrop-filter: blur(15px) saturate(160%);
-            -webkit-backdrop-filter: blur(15px) saturate(160%);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             padding: 12px 20px 25px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 10px;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
         }
 
         .interim {
@@ -194,8 +183,6 @@
             color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 1px;
-            text-align: center;
-            font-weight: bold;
         }
 
         .btn-mic {
@@ -206,7 +193,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             outline: none;
         }
 
@@ -214,14 +201,13 @@
             background: rgba(191, 139, 255, 0.04);
             border: 1px solid rgba(191, 139, 255, 0.3);
             color: var(--neon-purple);
-            box-shadow: inset 0 4px 12px rgba(255, 255, 255, 0.05), 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
         .btn-mic.on {
             background: rgba(255, 42, 42, 0.15);
             border: 1px solid var(--neon-red);
             color: #ffffff;
-            box-shadow: 0 0 20px rgba(255, 42, 42, 0.4);
+            box-shadow: 0 0 15px rgba(255, 42, 42, 0.4);
             animation: pulse-red 1.4s infinite;
         }
 
@@ -231,14 +217,14 @@
             100% { transform: scale(1); }
         }
         @keyframes slide-in {
-            from { opacity: 0; transform: translateY(6px); }
+            from { opacity: 0; transform: translateY(4px); }
             to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
-<!-- MÀN HÌNH LỰA CHỌN TÍNH NĂNG -->
+<!-- CHỌN NGÔN NGỮ CHÈN PHỦ -->
 <div id="welcome-screen" class="welcome-screen">
     <div class="welcome-title">🎙️ CHỌN CHẾ ĐỘ PHIÊN DỊCH</div>
     <div class="lang-option-btn en" onclick="selectLanguage('en')">🇬🇧 ENGLISH ➡️ TIẾNG VIỆT</div>
@@ -247,7 +233,7 @@
 
 <div class="app-container">
     <div class="header">
-        <h2 id="app-title">🎙️ Neon Interpreter</h2>
+        <h2>🎙️ Neon Interpreter</h2>
         <p id="app-sub">CHƯA CẤU HÌNH</p>
         <button class="btn-reset" onclick="resetLanguage()">Đổi Bộ Dịch</button>
     </div>
@@ -267,7 +253,10 @@
 <script>
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     let recognition = null;
-    let isListening = false;
+    
+    // Quản lý trạng thái cốt lõi
+    let explicitlyStopped = true; // Người dùng chủ động bấm dừng hay không
+    let isListening = false;      // Trạng thái phần cứng thực tế
     let silenceTimer = null;
     let finalBuffer = ""; 
 
@@ -285,7 +274,6 @@
     const interimBox = document.getElementById('interim-box');
     const chatLog = document.getElementById('chat-log');
 
-    // KHỞI TẠO MIC CỐ ĐỊNH NGAY TỪ ĐẦU (Tối ưu tuyệt đối cho Mobile)
     if (SpeechRecognition) {
         recognition = new SpeechRecognition();
         recognition.continuous = true; 
@@ -300,29 +288,41 @@
 
         recognition.onend = () => {
             isListening = false;
-            btnToggle.className = "btn-mic off";
-            statusDiv.innerText = "READY";
-            statusDiv.style.color = "var(--text-secondary)";
             
-            // FIX MOBILE: Nếu điện thoại tự động tắt Mic đột ngột mà vẫn còn chữ chưa dịch, ép dịch luôn!
+            // XỬ LÝ MOBILE: Nếu có chữ tồn đọng khi điện thoại sập mic, dịch luôn lập tức
             let pendingText = interimBox.innerText.trim();
             if (pendingText !== "") {
                 translateLine(pendingText);
                 finalBuffer = "";
                 interimBox.innerText = "";
+                interimBox.style.display = "none";
             }
-            
-            interimBox.style.display = "none";
-            clearTimeout(silenceTimer);
+
+            // CƠ CHẾ HỒI SINH: Nếu không phải do người dùng bấm tắt, tự khởi động lại Mic bí mật
+            if (!explicitlyStopped) {
+                setTimeout(() => {
+                    if (!explicitlyStopped && !isListening) {
+                        executeStartMic();
+                    }
+                }, 300); // Khoảng nghỉ 300ms chống lỗi xung đột phần cứng di động
+            } else {
+                btnToggle.className = "btn-mic off";
+                statusDiv.innerText = "READY";
+                statusDiv.style.color = "var(--text-secondary)";
+                interimBox.style.display = "none";
+                clearTimeout(silenceTimer);
+            }
         };
 
         recognition.onerror = (e) => {
-            let errorMsg = e.error.toUpperCase();
-            if (e.error === 'not-allowed') errorMsg = "LỖI: HÃY DÙNG LINK HTTPS / CẤP QUYỀN MIC";
-            statusDiv.innerText = errorMsg;
-            statusDiv.style.color = "var(--neon-red)";
-            btnToggle.className = "btn-mic off";
-            isListening = false;
+            console.log("Speech Error:", e.error);
+            if (e.error === 'not-allowed') {
+                statusDiv.innerText = "LỖI: HÃY DÙNG HTTPS / BẬT QUYỀN MIC CHROME/SAFARI";
+                statusDiv.style.color = "var(--neon-red)";
+                explicitlyStopped = true;
+                btnToggle.className = "btn-mic off";
+            }
+            // Các lỗi 'no-speech' hoặc nghẽn mạng trên mobile sẽ được bỏ qua để vòng lặp hồi sinh tự chạy tiếp
         };
 
         recognition.onresult = (event) => {
@@ -348,21 +348,24 @@
                 statusDiv.innerText = "SPEAKING...";
                 statusDiv.style.color = "var(--neon-gold)";
 
-                // Chờ người dùng dừng hẳn 1.5 giây để đóng gói câu dịch
+                // Rút ngắn thời gian ngắt nghỉ xuống 1 giây cho mobile nhạy bén hơn
                 silenceTimer = setTimeout(() => {
                     if (completeSentence.trim() !== "") {
                         translateLine(completeSentence.trim());
                         finalBuffer = ""; 
-                        interimBox.innerText = ""; // Xóa bộ đệm text để tránh trùng lập khi onend chạy
+                        interimBox.innerText = "";
                         interimBox.style.display = "none";
-                        statusDiv.innerText = `LISTENING... (NÓI ${currentMode.apiSl === 'en' ? 'TIẾNG ANH' : 'TIẾNG NHẬT'})`;
-                        statusDiv.style.color = "var(--neon-red)";
+                        
+                        // Sau khi dịch xong câu dài, chủ động reset mic để giải phóng bộ nhớ đệm luồng âm thanh
+                        if (!explicitlyStopped) {
+                            recognition.stop(); 
+                        }
                     }
-                }, 1500);
+                }, 1000);
             }
         };
     } else {
-        statusDiv.innerText = "ĐIỆN THOẠI/TRÌNH DUYỆT KHÔNG HỖ TRỢ CHỨC NĂNG MIC";
+        statusDiv.innerText = "THIẾT BỊ KHÔNG HỖ TRỢ ĐIỀU KHIỂN MIC KHÔNG DÂY";
         btnToggle.style.display = 'none';
     }
 
@@ -370,15 +373,15 @@
         if (lang === 'en') {
             currentMode.micLang = 'en-US';
             currentMode.apiSl = 'en';
-            currentMode.guideTextSrc = 'Speak a long sentence freely. The system will bundle all words together before translating.';
-            currentMode.guideTextVi = 'Hãy nói một câu tiếng Anh thoải mái. Hệ thống sẽ gộp toàn bộ từ lại rồi mới dịch.';
-            appSub.innerText = "ENGLISH ➡️ VIETNAMESE (BUFFER 1.5S)";
+            currentMode.guideTextSrc = 'Speak freely. The system auto-restarts on mobile to avoid disconnects.';
+            currentMode.guideTextVi = 'Hãy nói tiếng Anh. Hệ thống đã kích hoạt chế độ chống tự tắt mic trên điện thoại.';
+            appSub.innerText = "ENGLISH ➡️ VIETNAMESE (ANTI-DISCONNECT)";
         } else {
             currentMode.micLang = 'ja-JP';
             currentMode.apiSl = 'ja';
-            currentMode.guideTextSrc = '日本語で自由に話してください。システムがまとめて翻訳します。';
-            currentMode.guideTextVi = 'Hãy nói tiếng Nhật thoải mái. Hệ thống sẽ gộp toàn bộ câu lại rồi dịch sang tiếng Việt.';
-            appSub.innerText = "JAPANESE ➡️ VIETNAMESE (BUFFER 1.5S)";
+            currentMode.guideTextSrc = '日本語で話してください。モバイルの切断防止機能が有効です。';
+            currentMode.guideTextVi = 'Hãy nói tiếng Nhật. Hệ thống đã kích hoạt chế độ chống tự tắt mic trên điện thoại.';
+            appSub.innerText = "JAPANESE ➡️ VIETNAMESE (ANTI-DISCONNECT)";
         }
 
         welcomeScreen.style.display = "none";
@@ -392,22 +395,33 @@
     }
 
     function resetLanguage() {
-        if (isListening && recognition) {
+        explicitlyStopped = true;
+        if (recognition) {
             recognition.stop();
         }
         welcomeScreen.style.display = "flex";
     }
 
-    // Sự kiện tương tác bật tắt Mic trực tiếp
+    // Hàm gọi khởi chạy lõi cứng
+    function executeStartMic() {
+        try {
+            recognition.lang = currentMode.micLang;
+            recognition.start();
+        } catch(e) { 
+            console.log("Ignored crash command:", e.message); 
+        }
+    }
+
+    // Nhấp nút Mic ngoài giao diện chính
     btnToggle.addEventListener('click', () => {
         if (!recognition) return;
-        if (!isListening) {
-            try {
-                finalBuffer = "";
-                recognition.lang = currentMode.micLang; // Nạp cấu hình ngôn ngữ ngay khi chạm nút
-                recognition.start();
-            } catch(e) { console.log(e); }
+        if (explicitlyStopped) {
+            explicitlyStopped = false;
+            finalBuffer = "";
+            interimBox.innerText = "";
+            executeStartMic();
         } else {
+            explicitlyStopped = true;
             recognition.stop();
         }
     });
@@ -429,30 +443,31 @@
         row.appendChild(viDiv);
         chatLog.prepend(row); 
 
-        setTimeout(() => chatLog.scrollTop = chatLog.scrollHeight, 50);
+        setTimeout(() => chatLog.scrollTop = chatLog.scrollHeight, 30);
 
         try {
+            // Sử dụng API độc lập, không ép buộc thêm header để loại bỏ triệt để CORS trên mạng di động 3G/4G/5G
             const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${currentMode.apiSl}&tl=vi&dt=t&q=${encodeURIComponent(sourceText)}`;
             
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 5000);
+            const timeoutId = setTimeout(() => controller.abort(), 6000); // Nới rộng timeout xử lý mạng di động lên 6 giây
             
-            const response = await fetch(url, { signal: controller.signal });
+            const response = await fetch(url, { method: "GET", signal: controller.signal });
             clearTimeout(timeoutId);
             
             const data = await response.json();
-            if (data?.[0]?.[0]?.[0]) {
+            if (data && data[0] && data[0][0] && data[0][0][0]) {
                 viDiv.innerText = data[0][0][0];
                 viDiv.style.color = "var(--neon-cyan)";
             } else {
-                viDiv.innerText = "❌ Lỗi định dạng dữ liệu Google.";
+                viDiv.innerText = "❌ Lỗi phản hồi cấu trúc từ máy chủ dịch.";
                 viDiv.style.color = "var(--neon-red)";
             }
         } catch (error) {
             if (error.name === 'AbortError') {
-                viDiv.innerText = "❌ Mạng chậm (Google phản hồi quá 5s).";
+                viDiv.innerText = "❌ Sóng yếu (Yêu cầu dịch quá 6 giây).";
             } else {
-                viDiv.innerText = "❌ Lỗi kết nối hoặc Google chặn IP tạm thời.";
+                viDiv.innerText = "❌ Không thể kết nối cổng dịch (Kiểm tra HTTPS).";
             }
             viDiv.style.color = "var(--neon-red)";
         }
