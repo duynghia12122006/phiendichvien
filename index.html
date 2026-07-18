@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Trợ Lý Phiên Dịch Neon - Bẻ Khóa CORS Mobile</title>
+    <title>Trợ Lý Phiên Dịch Neon - Phiên Bản Di Động Tối Hậu</title>
     <style>
         :root {
             --bg-black: #06060c; 
@@ -25,123 +25,74 @@
             font-family: 'Segoe UI', 'Roboto', 'Noto Sans JP', sans-serif;
             background-color: var(--bg-black);
             color: var(--text-primary);
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             height: 100vh;
-            display: flex;
-            flex-direction: column;
+            display: flex; flex-direction: column;
             overflow: hidden;
         }
 
-        /* WELCOME OVERLAY */
+        /* SCREEN CHỌN NGÔN NGỮ */
         .welcome-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg-black);
             z-index: 999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
             padding: 20px;
             background: radial-gradient(circle at 50% 50%, #140a28, var(--bg-black) 80%);
         }
         .welcome-title {
             color: var(--text-primary);
-            font-size: 18px;
-            margin-bottom: 30px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+            font-size: 18px; margin-bottom: 30px;
+            letter-spacing: 2px; text-transform: uppercase;
             text-align: center;
         }
         .lang-option-btn {
-            width: 85%;
-            max-width: 320px;
-            padding: 18px;
-            margin: 12px 0;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            color: #fff;
-            background: var(--bg-card);
-            transition: all 0.2s ease;
-            text-align: center;
-            border: 1px solid transparent;
+            width: 85%; max-width: 320px;
+            padding: 18px; margin: 12px 0;
+            border-radius: 12px; font-size: 14px; font-weight: bold;
+            cursor: pointer; color: #fff; background: var(--bg-card);
+            text-align: center; border: 1px solid transparent;
         }
         .lang-option-btn.en { border-color: var(--neon-purple); box-shadow: 0 0 10px rgba(191, 139, 255, 0.15); }
         .lang-option-btn.en:active { background: rgba(191, 139, 255, 0.2); transform: scale(0.97); }
         .lang-option-btn.ja { border-color: var(--neon-cyan); box-shadow: 0 0 10px rgba(0, 240, 255, 0.15); }
         .lang-option-btn.ja:active { background: rgba(0, 240, 255, 0.2); transform: scale(0.97); }
 
-        /* MAIN APP */
+        /* GIAO DIỆN APP CHÍNH */
         .app-container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            width: 100%;
-            max-width: 650px; 
-            margin: 0 auto;
+            display: flex; flex-direction: column;
+            height: 100vh; width: 100%; max-width: 650px; margin: 0 auto;
             border-left: 1px solid rgba(255, 255, 255, 0.03);
             border-right: 1px solid rgba(255, 255, 255, 0.03);
         }
 
         .header {
-            padding: 12px 15px;
-            position: relative;
-            text-align: center;
+            padding: 12px 15px; position: relative; text-align: center;
             background: rgba(6, 6, 12, 0.8);
             border-bottom: 1px solid rgba(191, 139, 255, 0.15);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
         }
-        .header h2 {
-            margin: 0;
-            font-size: 15px;
-            color: var(--neon-purple);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 0 0 8px var(--neon-purple);
-        }
-        .header p {
-            margin: 3px 0 0;
-            font-size: 9px;
-            color: var(--text-secondary);
-            letter-spacing: 1px;
-        }
+        .header h2 { margin: 0; font-size: 15px; color: var(--neon-purple); text-transform: uppercase; letter-spacing: 2px; }
+        .header p { margin: 3px 0 0; font-size: 9px; color: var(--text-secondary); letter-spacing: 1px; }
         .btn-reset {
-            position: absolute;
-            right: 12px; top: 12px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text-secondary);
-            padding: 5px 8px;
-            border-radius: 5px;
-            font-size: 9px;
-            cursor: pointer;
+            position: absolute; right: 12px; top: 12px;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-secondary); padding: 5px 8px; border-radius: 5px; font-size: 9px; cursor: pointer;
         }
 
         .chat-log {
-            flex: 1;
-            display: flex;
-            flex-direction: column-reverse; 
-            gap: 12px;
-            padding: 15px;
-            overflow-y: auto;
+            flex: 1; display: flex; flex-direction: column-reverse; 
+            gap: 12px; padding: 15px; overflow-y: auto;
             background: radial-gradient(circle at 50% 100%, rgba(20, 10, 40, 0.3), transparent 70%);
         }
 
         .chat-row {
-            background: var(--bg-card);
-            padding: 12px 15px;
-            border-radius: 10px;
+            background: var(--bg-card); padding: 12px 15px; border-radius: 10px;
             border: 1px solid var(--glass-border);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
+            backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+            display: flex; flex-direction: column; gap: 6px;
             animation: slide-in 0.22s ease-out;
         }
         @media (min-width: 500px) {
@@ -153,62 +104,36 @@
         .text-vi { color: var(--neon-cyan); font-size: 14px; line-height: 1.4; text-shadow: 0 0 5px var(--neon-cyan-glow); word-break: break-word; }
 
         .footer-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            background: var(--glass-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             padding: 12px 20px 25px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
         }
 
         .interim {
-            width: 100%;
-            background: rgba(255, 230, 0, 0.04);
-            padding: 8px 12px;
-            border-radius: 6px;
-            border: 1px solid rgba(255, 230, 0, 0.3);
-            color: var(--neon-gold);
-            font-style: italic;
-            font-size: 13px;
-            text-align: center;
-            display: none;
-            word-wrap: break-word;
+            width: 100%; background: rgba(255, 230, 0, 0.04);
+            padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(255, 230, 0, 0.3);
+            color: var(--neon-gold); font-style: italic; font-size: 13px; text-align: center;
+            display: none; word-wrap: break-word;
         }
 
-        .status {
-            font-size: 10px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
+        .status { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* HỆ THỐNG HIỂN THỊ DEBUG DI ĐỘNG */
+        .debug-console {
+            font-family: monospace; font-size: 9px; color: #555566;
+            max-width: 90%; text-align: center; word-break: break-all; margin-top: -4px;
         }
 
         .btn-mic {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.2s ease;
-            outline: none;
+            width: 60px; height: 60px; border-radius: 50%; cursor: pointer;
+            display: flex; justify-content: center; align-items: center;
+            transition: all 0.2s ease; outline: none;
         }
-
-        .btn-mic.off {
-            background: rgba(191, 139, 255, 0.04);
-            border: 1px solid rgba(191, 139, 255, 0.3);
-            color: var(--neon-purple);
-        }
-
+        .btn-mic.off { background: rgba(191, 139, 255, 0.04); border: 1px solid rgba(191, 139, 255, 0.3); color: var(--neon-purple); }
         .btn-mic.on {
-            background: rgba(255, 42, 42, 0.15);
-            border: 1px solid var(--neon-red);
-            color: #ffffff;
-            box-shadow: 0 0 15px rgba(255, 42, 42, 0.4);
-            animation: pulse-red 1.4s infinite;
+            background: rgba(255, 42, 42, 0.15); border: 1px solid var(--neon-red); color: #ffffff;
+            box-shadow: 0 0 15px rgba(255, 42, 42, 0.4); animation: pulse-red 1.4s infinite;
         }
 
         @keyframes pulse-red {
@@ -224,7 +149,6 @@
 </head>
 <body>
 
-<!-- CHỌN NGÔN NGỮ CHÈN PHỦ -->
 <div id="welcome-screen" class="welcome-screen">
     <div class="welcome-title">🎙️ CHỌN CHẾ ĐỘ PHIÊN DỊCH</div>
     <div class="lang-option-btn en" onclick="selectLanguage('en')">🇬🇧 ENGLISH ➡️ TIẾNG VIỆT</div>
@@ -243,6 +167,7 @@
     <div class="footer-panel">
         <div id="interim-box" class="interim"></div>
         <div id="status" class="status">READY</div>
+        <div id="debug-log" class="debug-console">Hệ thống ổn định.</div>
 
         <button id="btn-toggle" class="btn-mic off">
             <svg stroke="currentColor" fill="none" stroke-width="2.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="22" width="22" xmlns="http://www.w3.org/2000/svg"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
@@ -259,12 +184,7 @@
     let silenceTimer = null;
     let finalBuffer = ""; 
 
-    let currentMode = {
-        micLang: 'en-US',
-        apiSl: 'en',
-        guideTextSrc: '',
-        guideTextVi: ''
-    };
+    let currentMode = { micLang: 'en-US', apiSl: 'en', guideTextSrc: '', guideTextVi: '' };
 
     const welcomeScreen = document.getElementById('welcome-screen');
     const appSub = document.getElementById('app-sub');
@@ -272,6 +192,11 @@
     const statusDiv = document.getElementById('status');
     const interimBox = document.getElementById('interim-box');
     const chatLog = document.getElementById('chat-log');
+    const debugLog = document.getElementById('debug-log');
+
+    function showDebug(msg) {
+        debugLog.innerText = `[LOG]: ${msg}`;
+    }
 
     if (SpeechRecognition) {
         recognition = new SpeechRecognition();
@@ -283,10 +208,12 @@
             btnToggle.className = "btn-mic on";
             statusDiv.innerText = `LISTENING... (NÓI ${currentMode.apiSl === 'en' ? 'TIẾNG ANH' : 'TIẾNG NHẬT'})`;
             statusDiv.style.color = "var(--neon-red)";
+            showDebug("Phần cứng Mic đã mở thành công.");
         };
 
         recognition.onend = () => {
             isListening = false;
+            showDebug("Hệ điều hành ép ngắt kết nối Mic (onend).");
             
             let pendingText = interimBox.innerText.trim();
             if (pendingText !== "") {
@@ -296,12 +223,14 @@
                 interimBox.style.display = "none";
             }
 
+            // Vòng lặp hồi sinh tự động trên di động: Tăng thời gian chờ lên 500ms chống nghẽn thiết bị
             if (!explicitlyStopped) {
+                showDebug("Đang tự động kích hoạt lại Mic ngầm...");
                 setTimeout(() => {
                     if (!explicitlyStopped && !isListening) {
                         executeStartMic();
                     }
-                }, 300); 
+                }, 500); 
             } else {
                 btnToggle.className = "btn-mic off";
                 statusDiv.innerText = "READY";
@@ -312,9 +241,9 @@
         };
 
         recognition.onerror = (e) => {
-            console.log("Speech Error:", e.error);
+            showDebug(`Lỗi Mic: ${e.error}`);
             if (e.error === 'not-allowed') {
-                statusDiv.innerText = "LỖI: CẦN HTTPS / CẤP QUYỀN MIC TRÌNH DUYỆT";
+                statusDiv.innerText = "LỖI: THIẾU QUYỀN TRUY CẬP MIC";
                 statusDiv.style.color = "var(--neon-red)";
                 explicitlyStopped = true;
                 btnToggle.className = "btn-mic off";
@@ -323,7 +252,6 @@
 
         recognition.onresult = (event) => {
             clearTimeout(silenceTimer);
-            
             let interimTranscript = '';
             let newFinals = '';
 
@@ -352,34 +280,30 @@
                         interimBox.style.display = "none";
                         
                         if (!explicitlyStopped) {
-                            recognition.stop(); 
+                            recognition.stop(); // Chủ động ngắt để giải phóng luồng âm thanh
                         }
                     }
                 }, 1000);
             }
         };
     } else {
-        statusDiv.innerText = "THIẾT BỊ KHÔNG HỖ TRỢ ĐIỀU KHIỂN MIC";
+        statusDiv.innerText = "TRÌNH DUYỆT KHÔNG HỖ TRỢ MIC";
         btnToggle.style.display = 'none';
     }
 
     function selectLanguage(lang) {
         if (lang === 'en') {
-            currentMode.micLang = 'en-US';
-            currentMode.apiSl = 'en';
-            currentMode.guideTextSrc = 'Speak freely. Giao thức dịch vượt tường lửa CORS di động đã kích hoạt.';
-            currentMode.guideTextVi = 'Hãy nói tiếng Anh. Bản vá lỗi dịch trên Mobile đã sẵn sàng.';
-            appSub.innerText = "ENGLISH ➡️ VIETNAMESE (CORS BYPASS)";
+            currentMode.micLang = 'en-US'; currentMode.apiSl = 'en';
+            currentMode.guideTextSrc = 'Dual-Engine Translation System activated.';
+            currentMode.guideTextVi = 'Hệ thống dịch kép (Google + Dự phòng) đã sẵn sàng.';
+            appSub.innerText = "ENGLISH ➡️ VIETNAMESE (DUAL-ENGINE)";
         } else {
-            currentMode.micLang = 'ja-JP';
-            currentMode.apiSl = 'ja';
-            currentMode.guideTextSrc = '日本語で話してください。モバイルのCORSバイパス機能が有効です。';
-            currentMode.guideTextVi = 'Hãy nói tiếng Nhật. Bản vá lỗi dịch trên Mobile đã sẵn sàng.';
-            appSub.innerText = "JAPANESE ➡️ VIETNAMESE (CORS BYPASS)";
+            currentMode.micLang = 'ja-JP'; currentMode.apiSl = 'ja';
+            currentMode.guideTextSrc = '二重翻訳エンジンが有効になりました。';
+            currentMode.guideTextVi = 'Hệ thống dịch kép (Google + Dự phòng) đã sẵn sàng.';
+            appSub.innerText = "JAPANESE ➡️ VIETNAMESE (DUAL-ENGINE)";
         }
-
         welcomeScreen.style.display = "none";
-        
         chatLog.innerHTML = `
             <div class="chat-row" style="border-color: rgba(0, 240, 255, 0.15);">
                 <div class="text-source" style="font-style: italic; color: var(--text-secondary);">${currentMode.guideTextSrc}</div>
@@ -390,9 +314,7 @@
 
     function resetLanguage() {
         explicitlyStopped = true;
-        if (recognition) {
-            recognition.stop();
-        }
+        if (recognition) recognition.stop();
         welcomeScreen.style.display = "flex";
     }
 
@@ -407,8 +329,7 @@
         if (!recognition) return;
         if (explicitlyStopped) {
             explicitlyStopped = false;
-            finalBuffer = "";
-            interimBox.innerText = "";
+            finalBuffer = ""; interimBox.innerText = "";
             executeStartMic();
         } else {
             explicitlyStopped = true;
@@ -416,57 +337,72 @@
         }
     });
 
-    // GIẢI PHÁP TỐI HẬU: HÀM DỊCH SỬ DỤNG JSONP ĐỂ VƯỢT QUA TẤT CẢ TƯỜNG LỬA CORS TRÊN DI ĐỘNG
-    function translateLine(sourceText) {
+    // GIẢI PHÁP TỐI THƯỢNG: ĐỘNG CƠ DỊCH KÉP (GOOGLE TRANSLATE + MYMEMORY BACKUP)
+    async function translateLine(sourceText) {
         const row = document.createElement('div');
         row.className = 'chat-row';
         
         const srcDiv = document.createElement('div');
-        srcDiv.className = 'text-source';
-        srcDiv.innerText = sourceText;
+        srcDiv.className = 'text-source'; srcDiv.innerText = sourceText;
 
         const viDiv = document.createElement('div');
-        viDiv.className = 'text-vi';
-        viDiv.innerText = "⚡ Đang dịch...";
+        viDiv.className = 'text-vi'; viDiv.innerText = "⚡ Đang kết nối máy chủ...";
         viDiv.style.color = "var(--text-secondary)";
 
-        row.appendChild(srcDiv);
-        row.appendChild(viDiv);
+        row.appendChild(srcDiv); row.appendChild(viDiv);
         chatLog.prepend(row); 
-
         setTimeout(() => chatLog.scrollTop = chatLog.scrollHeight, 30);
 
-        // Tạo tên callback ngẫu nhiên để không bị trùng lặp luồng dữ liệu
-        const callbackName = 'googleJsonp_' + Math.random().toString(36).substr(2, 9);
-        
-        // 1. Khởi tạo cổng hứng dữ liệu toàn cục cho JSONP
-        window[callbackName] = function(data) {
-            if (data && data[0] && data[0][0] && data[0][0][0]) {
-                viDiv.innerText = data[0][0][0];
-                viDiv.style.color = "var(--neon-cyan)";
-            } else {
-                viDiv.innerText = "❌ Lỗi cấu trúc phản hồi từ máy chủ.";
-                viDiv.style.color = "var(--neon-red)";
+        // --- CỔNG 1: DÙNG GOOGLE TRANSLATE CHUẨN ---
+        try {
+            showDebug("Đang dịch bằng cổng chính Google...");
+            const googleUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${currentMode.apiSl}&tl=vi&dt=t&q=${encodeURIComponent(sourceText)}`;
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3500); // Giới hạn 3.5 giây cho Google
+            
+            const response = await fetch(googleUrl, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data && data[0] && data[0][0] && data[0][0][0]) {
+                    viDiv.innerText = data[0][0][0];
+                    viDiv.style.color = "var(--neon-cyan)";
+                    showDebug("Dịch thành công bằng Google.");
+                    return; // Thoát hàm nếu thành công
+                }
             }
-            // Dọn dẹp thẻ script và biến sau khi nhận xong dữ liệu
-            delete window[callbackName];
-            document.getElementById(callbackName)?.remove();
-        };
+        } catch (error) {
+            console.log("Google Engine blocked or timed out, switching to backup...", error.name);
+        }
 
-        // 2. Tiêm thẻ <script> để tải ngầm phản hồi bypass hoàn toàn CORS
-        const script = document.createElement('script');
-        script.id = callbackName;
-        script.src = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${currentMode.apiSl}&tl=vi&dt=t&q=${encodeURIComponent(sourceText)}&callback=${callbackName}`;
-        
-        // Bắt lỗi nếu đường truyền mạng di động bị sập hẳn
-        script.onerror = function() {
-            viDiv.innerText = "❌ Lỗi mạng hoặc máy chủ dịch bị nghẽn.";
-            viDiv.style.color = "var(--neon-red)";
-            delete window[callbackName];
-            script.remove();
-        };
+        // --- CỔNG 2 (DỰ PHÒNG TỐI CAO): MYMEMORY ENGINE (Vượt hoàn toàn chặn IP di động) ---
+        try {
+            showDebug("Cổng chính nghẽn. Đang kích hoạt cổng dự phòng MyMemory...");
+            viDiv.innerText = "⚡ Đang chạy cổng dự phòng...";
+            
+            const pair = `${currentMode.apiSl}|vi`;
+            const myMemoryUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(sourceText)}&langpair=${pair}`;
+            
+            const response = await fetch(myMemoryUrl);
+            if (response.ok) {
+                const data = await response.json();
+                if (data && data.responseData && data.responseData.translatedText) {
+                    viDiv.innerText = data.responseData.translatedText;
+                    viDiv.style.color = "var(--neon-cyan)";
+                    showDebug("Dịch thành công bằng cổng dự phòng MyMemory.");
+                    return;
+                }
+            }
+        } catch (backupError) {
+            console.log("Both translation engines failed.", backupError);
+        }
 
-        document.body.appendChild(script);
+        // Nếu cả hai cổng đều sập (mất mạng hoàn toàn)
+        viDiv.innerText = "❌ Không phản hồi (Hãy kiểm tra mạng 3G/4G hoặc HTTPS).";
+        viDiv.style.color = "var(--neon-red)";
+        showDebug("Lỗi sập luồng: Cả hai cổng dịch đều không thể kết nối.");
     }
 </script>
 
