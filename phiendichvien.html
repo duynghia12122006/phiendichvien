@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Trợ Lý Phiên Dịch Neon Glass - Delay 1.5s</title>
+    <style>
+        /* === Hệ màu Neon Noir & Glassmorphism === */
+        :root {
+            --bg-black: #06060c; 
+            --bg-card: rgba(18, 18, 36, 0.7);  
+            --neon-purple: #bf8bff; 
+            --neon-purple-glow: rgba(191, 139, 255, 0.3);
+            --neon-cyan: #00f0ff;  
+            --neon-cyan-glow: rgba(0, 240, 255, 0.4);
+            --neon-gold: #ffe600; 
+            --neon-red: #ff2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #8f8fa3;
+            --glass-bg: rgba(15, 15, 30, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.06);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            background-color: var(--bg-black);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100%;
+            max-width: 650px; 
+            margin: 0 auto;
+            border-left: 1px solid rgba(255, 255, 255, 0.03);
+            border-right: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .header {
+            padding: 12px 15px;
+            text-align: center;
+            background: rgba(6, 6, 12, 0.8);
+            border-bottom: 1px solid rgba(191, 139, 255, 0.15);
+            backdrop-filter: blur(10px);
+        }
+        .header h2 {
+            margin: 0;
+            font-size: 16px;
+            color: var(--neon-purple);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 8px var(--neon-purple);
+        }
+        .header p {
+            margin: 3px 0 0;
+            font-size: 10px;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+        }
+
+        .chat-log {
+            flex: 1;
+            display: flex;
+            flex-direction: column-reverse; 
+            gap: 12px;
+            padding: 15px;
+            overflow-y: auto;
+            background: radial-gradient(circle at 50% 100%, rgba(20, 10, 40, 0.3), transparent 70%);
+        }
+        .chat-log::-webkit-scrollbar { width: 4px; }
+        .chat-log::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+        .chat-row {
+            background: var(--bg-card);
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(5px);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            animation: slide-in 0.25s ease-out;
+        }
+        @media (min-width: 500px) {
+            .chat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+            .text-en { border-right: 1px solid rgba(255,255,255,0.05); padding-right: 10px; }
+        }
+
+        .text-en { color: #e2e2e9; font-size: 14px; line-height: 1.4; }
+        .text-vi { color: var(--neon-cyan); font-size: 14px; line-height: 1.4; text-shadow: 0 0 5px var(--neon-cyan-glow); }
+
+        .footer-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px) saturate(160%);
+            -webkit-backdrop-filter: blur(15px) saturate(160%);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 12px 20px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+        }
+
+        .interim {
+            width: 100%;
+            background: rgba(255, 230, 0, 0.04);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 230, 0, 0.3);
+            color: var(--neon-gold);
+            font-style: italic;
+            font-size: 13px;
+            text-align: center;
+            display: none;
+            word-wrap: break-word;
+        }
+
+        .status {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-mic {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            outline: none;
+            position: relative;
+        }
+
+        .btn-mic.off {
+            background: rgba(191, 139, 255, 0.04);
+            border: 1px solid rgba(191, 139, 255, 0.3);
+            color: var(--neon-purple);
+            box-shadow: 
+                inset 0 4px 12px rgba(255, 255, 255, 0.05),
+                inset 0 -4px 12px rgba(0, 0, 0, 0.4),
+                0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        .btn-mic.off svg { filter: drop-shadow(0 0 4px var(--neon-purple)); }
+
+        .btn-mic.on {
+            background: rgba(255, 42, 42, 0.15);
+            border: 1px solid var(--neon-red);
+            color: #ffffff;
+            box-shadow: 
+                inset 0 4px 10px rgba(255, 255, 255, 0.1),
+                0 0 20px rgba(255, 42, 42, 0.4);
+            animation: pulse-red 1.4s infinite;
+        }
+        .btn-mic.on svg { filter: drop-shadow(0 0 6px #fff); }
+
+        @media (min-width: 768px) {
+            .btn-mic:hover {
+                transform: scale(1.06);
+                background: rgba(191, 139, 255, 0.12);
+                border-color: var(--neon-purple);
+                box-shadow: 0 0 15px rgba(191, 139, 255, 0.4);
+            }
+        }
+
+        @keyframes pulse-red {
+            0% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 42, 42, 0.3); }
+            50% { transform: scale(1.05); box-shadow: 0 0 25px rgba(255, 42, 42, 0.6); }
+            100% { transform: scale(1); box-shadow: 0 0 10px rgba(255, 42, 42, 0.3); }
+        }
+        @keyframes slide-in {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="header">
+        <h2>🎙️ Neon Interpreter</h2>
+        <p>SMART PAUSE 1.5S ➡️ AUTO TRANSLATE</p>
+    </div>
+
+    <div id="chat-log" class="chat-log">
+        <div class="chat-row" style="border-color: rgba(0, 240, 255, 0.15);">
+            <div class="text-en" style="font-style: italic; color: var(--text-secondary);">Speak English. App will wait for 1.5 seconds of silence before translating.</div>
+            <div class="text-vi" style="font-style: italic; color: rgba(0, 240, 255, 0.6);">Hãy nói tiếng Anh. Ứng dụng sẽ đợi bạn im lặng 1.5 giây rồi mới dịch.</div>
+        </div>
+    </div>
+
+    <div class="footer-panel">
+        <div id="interim-box" class="interim"></div>
+        <div id="status" class="status">READY</div>
+
+        <button id="btn-toggle" class="btn-mic off">
+            <svg stroke="currentColor" fill="none" stroke-width="2.5" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="22" width="22" xmlns="http://www.w3.org/2000/svg"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+        </button>
+    </div>
+</div>
+
+<script>
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition;
+    let isListening = false;
+    
+    // Các biến phục vụ thuật toán đếm thời gian im lặng (Debounce)
+    let silenceTimer = null;
+    let speechBuffer = ""; 
+
+    const btnToggle = document.getElementById('btn-toggle');
+    const statusDiv = document.getElementById('status');
+    const interimBox = document.getElementById('interim-box');
+    const chatLog = document.getElementById('chat-log');
+
+    if (!SpeechRecognition) {
+        statusDiv.innerText = "NOT SUPPORTED";
+        btnToggle.style.display = 'none';
+    } else {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.continuous = true;
+        recognition.interimResults = true;
+
+        recognition.onstart = () => {
+            isListening = true;
+            btnToggle.className = "btn-mic on";
+            statusDiv.innerText = "LISTENING...";
+            statusDiv.style.color = "var(--neon-red)";
+        };
+
+        recognition.onend = () => {
+            isListening = false;
+            btnToggle.className = "btn-mic off";
+            statusDiv.innerText = "READY";
+            statusDiv.style.color = "var(--text-secondary)";
+            interimBox.style.display = "none";
+            clearTimeout(silenceTimer);
+            speechBuffer = "";
+        };
+
+        recognition.onerror = (e) => {
+            statusDiv.innerText = "ERROR: " + e.error.toUpperCase();
+            statusDiv.style.color = "var(--neon-red)";
+        };
+
+        recognition.onresult = (event) => {
+            let interimTranscript = '';
+            
+            // Xóa bộ đếm thời gian cũ ngay khi phát hiện có tiếng động hoặc từ mới
+            clearTimeout(silenceTimer);
+
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                const transcript = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    // Gom các từ đã chốt từ hệ thống vào bộ nhớ tạm
+                    speechBuffer += " " + transcript;
+                } else {
+                    // Gom các từ đang nói dở dang (chữ nháp)
+                    interimTranscript += transcript;
+                }
+            }
+
+            // Hiển thị chữ nháp theo thời gian thực để bạn biết máy đang nghe đúng
+            if (interimTranscript) {
+                interimBox.style.display = "block";
+                interimBox.innerText = interimTranscript;
+                statusDiv.innerText = "SPEAKING...";
+                statusDiv.style.color = "var(--neon-gold)";
+            }
+
+            // KÍCH HOẠT THUẬT TOÁN ĐỢI 1.5 GIÂY IM LẶNG
+            // Cứ khi nào bạn ngừng tạo ra âm thanh mới, đồng hồ này bắt đầu đếm ngược
+            silenceTimer = setTimeout(() => {
+                // Lấy toàn bộ chữ trong bộ nhớ tạm + chữ nháp cuối cùng nếu có
+                let finalSentence = speechBuffer.trim();
+                if (!finalSentence && interimTranscript.trim()) {
+                    finalSentence = interimTranscript.trim();
+                }
+
+                if (finalSentence !== '') {
+                    // Đủ 1.5s im lặng -> Đẩy đi dịch!
+                    translateLine(finalSentence);
+                    
+                    // Reset lại bộ nhớ và ẩn khay chữ nháp để chuẩn bị cho câu tiếp theo
+                    speechBuffer = "";
+                    interimBox.style.display = "none";
+                    statusDiv.innerText = "LISTENING...";
+                    statusDiv.style.color = "var(--neon-red)";
+                }
+            }, 1500); // 1500 mili-giây = 1.5 giây
+        };
+
+        btnToggle.addEventListener('click', () => {
+            if (!isListening) { try { recognition.start(); } catch(e){} } 
+            else { recognition.stop(); }
+        });
+    }
+
+    async function translateLine(englishText) {
+        const row = document.createElement('div');
+        row.className = 'chat-row';
+        
+        const enDiv = document.createElement('div');
+        enDiv.className = 'text-en';
+        enDiv.innerText = englishText;
+
+        const viDiv = document.createElement('div');
+        viDiv.className = 'text-vi';
+        viDiv.innerText = "...";
+
+        row.appendChild(enDiv);
+        row.appendChild(viDiv);
+        chatLog.prepend(row); 
+
+        setTimeout(() => chatLog.scrollTop = chatLog.scrollHeight, 50);
+
+        try {
+            const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=vi&dt=t&q=${encodeURIComponent(englishText)}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data?.[0]?.[0]?.[0]) {
+                viDiv.innerText = data[0][0][0];
+            } else {
+                viDiv.innerText = "Translation error.";
+            }
+        } catch (error) {
+            viDiv.innerText = "Network error.";
+        }
+    }
+</script>
+
+</body>
+</html>
